@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+          PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+          "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="examples.orm.mapper.EmployeeMapper">
+    <resultMap id="employeeResult" type="examples.entity.EmployeeModel">
+        <result column="id"  property="id"/>
+        <result column="name"  property="name"/>
+    </resultMap>
+
+    <select id="getEmployee" resultMap="employeeResult">
+        select id, name
+        from m_employee
+        where id = #{employee_id}
+    </select>
+
+<!--    <select id="findAll" resultMap="employeeResult">
+		select id, family_name, first_name, sex, DATE_FORMAT(birthday,'%Y年%m月%d日') as birthday from m_employee order by right(concat('00',id), 3);
+	</select>
+
+	select em.id, em.family_name, em.first_name, em.sex, DATE_FORMAT(em.birthday,'%Y年%m月%d日') as birthday, org.name as organization_name, pos.name as position_name from ((m_members as mem inner join m_organization as org on (mem.organization_id=org.id)) inner join m_position as pos on (mem.position_id=pos.id)) inner join m_employee as em on (em.id=mem.employee_id) where em.id=#{id};
+-->
+
+    <select id="findAll" resultMap="employeeResult" parameterType="examples.entity.EmployeeModel">
+		select right(concat('00',id), 3) as sort_id, id, family_name, first_name, sex, DATE_FORMAT(birthday,'%Y年%m月%d日') as birthday from m_employee order by sort_id asc;
+	</select>
+
+	<select id="findDetail" resultMap="employeeResult" parameterType="examples.entity.EmployeeModel">
+		select em.id, em.family_name, em.first_name, em.sex, em.birthday from m_employee as em where em.id=#{id};
+	</select>
+
+ 	<insert id="entryEmployee" parameterType="examples.entity.EmployeeModel">
+		insert into m_employee (id, family_name, first_name, sex, birthday)
+		values (#{id}, #{family_name}, #{first_name}, #{sex}, #{birthday})
+	</insert>
+
+ 	<delete id="deleteEmployee" parameterType="examples.entity.EmployeeModel">
+		delete from m_employee where id=#{id};
+	</delete>
+
+ 	<update id="updateEmployee" parameterType="examples.entity.EmployeeModel">
+		update m_employee set family_name=#{family_name}, first_name=#{first_name}, sex=#{sex}, birthday=#{birthday} where id=#{id};
+	</update>
+
+
+</mapper>
